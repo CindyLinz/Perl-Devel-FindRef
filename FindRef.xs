@@ -12,7 +12,7 @@
 # define SVt_LAST 16
 #endif
 
-#if !PERL_VERSION_ATLEAST (5,10,0)
+#ifndef SvPAD_OUR
 # define SvPAD_OUR(dummy) 0
 #endif
 
@@ -28,6 +28,10 @@ typedef SV PADNAME;
 # define PadnameLEN SvCUR
 # define PadARRAY(pad)    AvARRAY (pad)
 # define PadlistARRAY(pl) ((PAD **)AvARRAY (pl))
+#endif
+
+#ifndef PadMAX
+# define PadMAX(pad) AvFILLp(pad)
 #endif
 
 #ifndef padnamelist_fetch
