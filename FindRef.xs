@@ -178,12 +178,12 @@ find_ (SV *target_ref)
                               if (padlist)
                                 {
                                   int depth = CvDEPTH (sv);
-
+#if !PERL_VERSION_ATLEAST(5,21,6)
                                 /* Anonymous subs have a padlist but zero depth */
                                 /* some hacks switch CvANON off, so we just blindly assume a minimum of 1 */
                                   if (!depth)
                                     depth = 1;
-
+#endif
                                   while (depth)
                                     {
                                       PAD *pad = PadlistARRAY (padlist)[depth];
@@ -194,8 +194,8 @@ find_ (SV *target_ref)
                                       if (PadARRAY (pad)[0] == targ)
                                         res_pair ("the argument array for");
 
-                                      for (i = AvFILLp (pad) + 1; --i; )
-                                        if (AvARRAY (pad)[i] == targ)
+                                      for (i = PadMAX (pad) + 1; --i; )
+                                        if (PadARRAY (pad)[i] == targ)
                                           {
                                             /* Values from constant functions are stored in the pad without any name */
                                             PADNAME *name_sv = padnamelist_fetch (PadlistNAMES (padlist), i);
