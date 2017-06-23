@@ -24,24 +24,23 @@
 #ifndef PadARRAY
 typedef AV PADNAMELIST;
 typedef SV PADNAME;
-# define PadnamePV SvPV_nolen
-# define PadnameLEN SvCUR
-# define PadARRAY(pad)    AvARRAY (pad)
+# define PadnamePV(sv) SvPVX (sv)
+# define PadnameLEN(sv) SvCUR (sv)
+# define PadARRAY(pad) AvARRAY (pad)
 # define PadlistARRAY(pl) ((PAD **)AvARRAY (pl))
 #endif
 
 #ifndef PadMAX
-# define PadMAX(pad) AvFILLp(pad)
+# define PadMAX(pad) AvFILLp (pad)
 #endif
 
 #ifndef padnamelist_fetch
-# define padnamelist_fetch(a,b) *av_fetch(a,b,FALSE)
+# define padnamelist_fetch(a,b) *av_fetch (a, b, FALSE)
 #endif
 
 #ifndef PadlistNAMES
-# define PadlistNAMES(padlist) *PadlistARRAY(padlist)
+# define PadlistNAMES(padlist) *PadlistARRAY (padlist)
 #endif
-
 
 #define res_pair(text)						\
   do {								\
@@ -119,7 +118,7 @@ find_ (SV *target_ref)
 
                     if (SvTYPE (sv) >= SVt_PVMG)
                       {
-#if !PERL_VERSION_ATLEAST(5,21,6)
+#if !PERL_VERSION_ATLEAST (5,21,6)
                         if (SvTYPE (sv) == SVt_PVMG && SvPAD_OUR (sv))
                           {
                             /* I have no clue what this is */
@@ -185,7 +184,7 @@ find_ (SV *target_ref)
 #if !PERL_VERSION_ATLEAST(5,21,6)
                                 /* Anonymous subs have a padlist but zero depth */
                                 /* some hacks switch CvANON off, so we just blindly assume a minimum of 1 */
-                                  if (!depth)
+                                  if (!depth && !PERL_VERSION_ATLEAST (5,21,6))
                                     depth = 1;
 #endif
                                   while (depth)
@@ -202,10 +201,10 @@ find_ (SV *target_ref)
                                         if (PadARRAY (pad)[i] == targ)
                                           {
                                             /* Values from constant functions are stored in the pad without any name */
-                                            PADNAME *name_sv = padnamelist_fetch (PadlistNAMES (padlist), i);
+                                            PADNAME *name = padnamelist_fetch (PadlistNAMES (padlist), i);
 
-                                            if (name_sv)
-                                              res_pair (form ("the lexical '%s' in", PadnamePV (name_sv)));
+                                            if (name && PadnamePV (name) && *PadnamePV (name))
+                                              res_pair (form ("the lexical '%s' in", PadnamePV (name)));
                                             else
                                               res_pair ("an unnamed lexical in");
                                           }
