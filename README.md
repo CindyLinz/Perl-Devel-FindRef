@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/CindyLinz/Perl-Devel-FindRef.svg?branch=master)](https://travis-ci.org/CindyLinz/Perl-Devel-FindRef)
+
 # NAME
 
 Devel::FindRef - where is that reference to my variable hiding?
